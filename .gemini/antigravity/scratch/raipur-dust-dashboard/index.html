@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raipur-Bhilai Vehicle Dust Mitigation Command Center</title>
+  <!-- Google Fonts: Outfit and Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- FontAwesome for beautiful icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+          <i class="fa-solid fa-wind-dust"></i>
+        </div>
+        <div class="logo-text">
+          <h1>CG-AeroDust</h1>
+          <span>Raipur-Bhilai Corridor</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" id="btn-page1" onclick="switchPage(1)">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>1. Demographics & Pain Areas</span>
+        </button>
+        <button class="nav-btn" id="btn-page2" onclick="switchPage(2)">
+          <i class="fa-solid fa-gears"></i>
+          <span>2. Optimization & Solution</span>
+        </button>
+      </nav>
+
+      <div class="quick-stats-box">
+        <div class="stat-title">CURRENT STATUS</div>
+        <div class="stat-value text-danger" id="sidebar-aqi">242 AQI</div>
+        <div class="stat-label">Average PM10: 310 µg/m³</div>
+        <div class="progress-bar-container">
+          <div class="progress-bar bg-danger" style="width: 78%" id="sidebar-progress"></div>
+        </div>
+        <div class="stat-meta">Status: Poor Air Quality</div>
+      </div>
+
+      <footer class="sidebar-footer">
+        <p>Chhattisgarh Environmental Protection Board (Simulated)</p>
+        <p class="footer-version">v2.1.0 • Stable</p>
+      </footer>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- HEADER -->
+      <header class="main-header">
+        <div class="header-title">
+          <span class="breadcrumb" id="breadcrumb-text">Home / Page 1</span>
+          <h2 id="header-display-title">Demographics & Corridor Pain Areas</h2>
+        </div>
+        <div class="header-actions">
+          <div class="date-badge">
+            <i class="fa-regular fa-calendar-days"></i>
+            <span id="current-date">June 27, 2026</span>
+          </div>
+          <button class="btn-refresh" onclick="resetDashboard()">
+            <i class="fa-solid fa-arrows-rotate"></i> Reset
+          </button>
+        </div>
+      </header>
+
+      <!-- PAGE 1: DEMOGRAPHICS & PAIN AREAS -->
+      <div class="page-content active" id="page1">
+        <div class="dashboard-grid grid-2">
+          <!-- LEFT COLUMN: Maps -->
+          <div class="card map-card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-map"></i> Spatial Analysis & Industrial Corridors</h3>
+              <div class="map-toggles">
+                <button class="map-tab active" id="tab-cg" onclick="toggleMap('cg')">Chhattisgarh State</button>
+                <button class="map-tab" id="tab-corridor" onclick="toggleMap('corridor')">Raipur-Bhilai Corridor Zoom</button>
+              </div>
+            </div>
+            <div class="card-body map-container-wrapper">
+              <!-- CHHATTISGARH STATE MAP (SVG) -->
+              <div class="map-view active" id="map-cg-view">
+                <svg id="cg-map-svg" viewBox="0 0 500 650" width="100%" height="100%">
+                  <!-- Stylized Chhattisgarh Districts -->
+                  <!-- Northern Zone -->
+                  <path class="district-path north" d="M 180,40 L 220,30 L 250,50 L 290,30 L 310,60 L 330,90 L 300,120 L 250,110 L 210,130 L 160,110 L 180,40 Z" />
+                  <text x="240" y="80" class="map-label">North CG (Surguja/Koriya)</text>
+                  
+                  <!-- Central Zone (The Pain Area Corridor) -->
+                  <!-- Bemetara/Kawardha -->
+                  <path class="district-path central" d="M 120,180 L 160,150 L 210,170 L 210,220 L 150,230 L 120,180 Z" />
+                  <!-- Bilaspur/Korba/Janjgir -->
+                  <path class="district-path central industrial" d="M 210,130 L 250,110 L 300,120 L 340,150 L 320,210 L 280,220 L 210,170 Z" />
+                  <text x="270" y="160" class="map-label">Korba-Bilaspur (Coal/Power)</text>
+
+                  <!-- Durg / Bhilai (Pain Area 1) -->
+                  <path class="district-path corridor-highlight active-hotspot" id="path-durg" d="M 130,230 L 180,220 L 195,260 L 150,290 L 130,230 Z" onclick="selectHotspot('hathkhoj')" />
+                  <!-- Raipur (Pain Area 2) -->
+                  <path class="district-path corridor-highlight active-hotspot" id="path-raipur" d="M 180,220 L 230,210 L 250,270 L 195,260 Z" onclick="selectHotspot('siltara')" />
+                  
+                  <!-- Mahasamund -->
+                  <path class="district-path central" d="M 230,210 L 280,220 L 290,290 L 250,270 Z" />
+                  <!-- Balod / Dhamtari -->
+                  <path class="district-path central" d="M 150,290 L 195,260 L 250,270 L 230,350 L 180,360 L 150,290 Z" />
+                  
+                  <!-- Southern Zone (Bastar) -->
+                  <path class="district-path south" d="M 150,380 L 200,370 L 230,420 L 250,490 L 220,580 L 180,590 L 130,520 L 120,440 L 150,380 Z" />
+                  <text x="180" y="480" class="map-label">Bastar Region (Mining)</text>
+
+                  <!-- Glowing Highlights for Raipur & Bhilai -->
+                  <circle cx="187" cy="242" r="8" class="map-glow-dot red-glow" />
+                  <circle cx="210" cy="238" r="8" class="map-glow-dot orange-glow" />
+
+                  <!-- Text Labels for Core Corridor -->
+                  <text x="145" y="255" class="map-city-label">Bhilai</text>
+                  <text x="215" y="255" class="map-city-label">Raipur</text>
+                  
+                  <!-- Legend overlay inside SVG -->
+                  <g transform="translate(20, 530)">
+                    <rect width="180" height="90" rx="6" fill="rgba(11, 34, 64, 0.85)" stroke="#1a3d6c" />
+                    <circle cx="15" cy="20" r="6" fill="#ff3366" />
+                    <text x="30" y="24" fill="#fff" font-size="11" font-family="Inter">Raipur-Bhilai Corridor</text>
+                    
+                    <circle cx="15" cy="45" r="6" fill="#ffb020" />
+                    <text x="30" y="49" fill="#fff" font-size="11" font-family="Inter">Other Ind. Zones (Korba/Raigarh)</text>
+                    
+                    <circle cx="15" cy="70" r="6" fill="#00f2fe" stroke="none" />
+                    <text x="30" y="74" fill="#fff" font-size="11" font-family="Inter">Mining/Agricultural Zones</text>
+                  </g>
+                </svg>
+              </div>
+
+              <!-- DETAILED CORRIDOR ZOOM VIEW (SVG) -->
+              <div class="map-view" id="map-corridor-view">
+                <svg id="corridor-map-svg" viewBox="0 0 500 400" width="100%" height="100%">
+                  <!-- NH-53 Highway Line -->
+                  <path d="M 30,200 Q 150,180 250,210 T 470,190" fill="none" stroke="#2563eb" stroke-width="8" stroke-linecap="round" />
+                  <path d="M 30,200 Q 150,180 250,210 T 470,190" fill="none" stroke="#ffb020" stroke-width="2" stroke-dasharray="8 6" stroke-linecap="round" />
+                  <text x="35" y="175" class="highway-label">NH-53 (To Nagpur)</text>
+                  <text x="400" y="170" class="highway-label">NH-53 (To Sambalpur)</text>
+                  
+                  <!-- Hotspot Areas -->
+                  <!-- Jamul Cement / Bhilai Steel -->
+                  <g class="map-hotspot" onclick="selectHotspot('jamul')">
+                    <circle cx="90" cy="150" r="28" class="hotspot-bg orange" />
+                    <circle cx="90" cy="150" r="6" fill="#fff" />
+                    <text x="90" y="195" class="hotspot-title">Jamul (Cement)</text>
+                  </g>
+                  
+                  <!-- Hathkhoj / Bhilai Heavy Industrial Area -->
+                  <g class="map-hotspot active" onclick="selectHotspot('hathkhoj')">
+                    <circle cx="160" cy="205" r="35" class="hotspot-bg red pulse" />
+                    <circle cx="160" cy="205" r="8" fill="#fff" />
+                    <text x="160" y="255" class="hotspot-title">Hathkhoj (Heavy Ind.)</text>
+                  </g>
+
+                  <!-- Kumhari Town (Transit Corridor & High Spillage) -->
+                  <g class="map-hotspot" onclick="selectHotspot('kumhari')">
+                    <circle cx="240" cy="200" r="22" class="hotspot-bg orange" />
+                    <circle cx="240" cy="200" r="5" fill="#fff" />
+                    <text x="240" y="235" class="hotspot-title">Kumhari (Transit)</text>
+                  </g>
+
+                  <!-- Urla Industrial Area -->
+                  <g class="map-hotspot" onclick="selectHotspot('urla')">
+                    <circle cx="320" cy="140" r="32" class="hotspot-bg red" />
+                    <circle cx="320" cy="140" r="7" fill="#fff" />
+                    <text x="320" y="185" class="hotspot-title">Urla (Sponge Iron)</text>
+                  </g>
+
+                  <!-- Siltara Industrial Zone -->
+                  <g class="map-hotspot" onclick="selectHotspot('siltara')">
+                    <circle cx="400" cy="100" r="38" class="hotspot-bg red pulse" />
+                    <circle cx="400" cy="100" r="8" fill="#fff" />
+                    <text x="400" y="150" class="hotspot-title">Siltara (Mega Ind. Hub)</text>
+                  </g>
+                  
+                  <!-- Raipur City Center (Urban Receptor) -->
+                  <g class="map-hotspot" onclick="selectHotspot('raipur-city')">
+                    <rect x="300" y="230" width="70" height="40" rx="5" fill="rgba(10, 25, 47, 0.9)" stroke="#00f2fe" stroke-width="1.5" />
+                    <text x="335" y="255" class="urban-title">Raipur City</text>
+                  </g>
+
+                  <!-- Interactive Wind Indicator -->
+                  <g transform="translate(420, 320)">
+                    <circle cx="25" cy="25" r="20" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.2)" />
+                    <line x1="25" y1="35" x2="25" y2="15" stroke="#00f2fe" stroke-width="2" />
+                    <path d="M 21,20 L 25,12 L 29,20 Z" fill="#00f2fe" />
+                    <text x="25" y="42" fill="#8892b0" font-size="8" text-anchor="middle">WIND (SW)</text>
+                  </g>
+                </svg>
+              </div>
+            </div>
+            <div class="card-footer">
+              <span class="hint-text"><i class="fa-solid fa-circle-info"></i> Click on marked hotspot locations to view localized demographics and emission profiles.</span>
+            </div>
+          </div>
+
+          <!-- RIGHT COLUMN: Pain Area Details & Demographics -->
+          <div class="card info-card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-chart-line"></i> Hotspot Environmental Profile</h3>
+              <span class="badge badge-danger" id="hotspot-risk-badge">CRITICAL RISK</span>
+            </div>
+            <div class="card-body">
+              <h4 class="hotspot-name" id="display-hotspot-name">Hathkhoj Heavy Industrial Area (Bhilai)</h4>
+              <p class="hotspot-description" id="display-hotspot-desc">
+                Serving as the primary manufacturing and engineering cluster for the Bhilai Steel Plant ecosystem. Over 3,500 heavy multi-axle dumper trucks enter and exit this zone daily. Cargo spillage and road dust lifting are severe due to structural bypass roads.
+              </p>
+              
+              <div class="metrics-subgrid">
+                <div class="metric-mini-card">
+                  <div class="label">Daily Heavy Truck Traffic</div>
+                  <div class="val text-primary" id="hotspot-traffic">3,800 trucks/day</div>
+                </div>
+                <div class="metric-mini-card">
+                  <div class="label">Primary Materials Spilled</div>
+                  <div class="val" id="hotspot-materials">Coal Dust, Slag, Iron Ore</div>
+                </div>
+                <div class="metric-mini-card">
+                  <div class="label">Avg PM10 Concentration</div>
+                  <div class="val text-warning" id="hotspot-pm10">340 µg/m³</div>
+                </div>
+                <div class="metric-mini-card">
+                  <div class="label">Nearby Affected Population</div>
+                  <div class="val" id="hotspot-population">145,000 residents</div>
+                </div>
+              </div>
+
+              <!-- Hospital Admissions / Respiratory Impact Stats -->
+              <div class="impact-section">
+                <h5>Demographic Vulnerability & Health Impact</h5>
+                <div class="impact-meter-wrapper">
+                  <div class="impact-stat">
+                    <span class="num text-danger" id="hotspot-health-pct">42%</span>
+                    <span class="lbl">Increase in Respiratory Illnesses vs. State Baseline</span>
+                  </div>
+                  <div class="impact-stat">
+                    <span class="num text-warning" id="hotspot-children-val">12,200</span>
+                    <span class="lbl">Children within 2km high-deposition buffer</span>
+                  </div>
+                </div>
+                <div class="hospital-alert">
+                  <i class="fa-solid fa-circle-exclamation text-danger"></i>
+                  <span><strong>Clinical Feedback:</strong> Sector 9 Hospital (Bhilai) and AIIMS Raipur report persistent seasonal surges in asthma admissions directly correlated to transport-lane dust loads.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTTOM GRID: Region Summary Charts & Global Numbers -->
+        <div class="dashboard-grid grid-3 margin-top">
+          <div class="card stat-summary-card">
+            <div class="card-body flex-row">
+              <div class="icon-circle bg-danger-light"><i class="fa-solid fa-truck-ramp-box"></i></div>
+              <div class="data-block">
+                <h3>12,500</h3>
+                <p>Total Daily Truck Trips (Raipur-Bhilai)</p>
+              </div>
+            </div>
+          </div>
+          <div class="card stat-summary-card">
+            <div class="card-body flex-row">
+              <div class="icon-circle bg-warning-light"><i class="fa-solid fa-dumpster-fire"></i></div>
+              <div class="data-block">
+                <h3>336 Tons</h3>
+                <p>Daily Fugitive Dust Outflow (Escaping Cargo)</p>
+              </div>
+            </div>
+          </div>
+          <div class="card stat-summary-card">
+            <div class="card-body flex-row">
+              <div class="icon-circle bg-info-light"><i class="fa-solid fa-mask"></i></div>
+              <div class="data-block">
+                <h3>235 µg/m³</h3>
+                <p>Corridor Average PM10 Level (Safe limit: 100)</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid grid-2 margin-top">
+          <!-- Baseline Emission Breakdown -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-chart-pie"></i> Cargo Spillage Profile by Weight & Material</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="cargoSpillageChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- AQI Hourly Trend -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-clock-rotate-left"></i> Typical 24hr PM10 Trend Along Corridor Highway</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="corridorTrendChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 2: OPTIMIZATION & SOLUTIONS -->
+      <div class="page-content" id="page2">
+        <!-- Interactive Controls + Comparison Dashboard -->
+        <div class="dashboard-grid grid-3">
+          <!-- Technology Selector Panel -->
+          <div class="card tech-card col-span-1">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-screwdriver-wrench"></i> AeroDust Shield™ Retrofits</h3>
+              <p class="subtitle">Select the combination of containment hardware to deploy</p>
+            </div>
+            <div class="card-body">
+              <div class="tech-options-list">
+                <!-- Tech 1 -->
+                <div class="tech-item-row" id="row-tech-tarp">
+                  <div class="checkbox-container">
+                    <input type="checkbox" id="tech-tarp" checked onchange="recalculateSolution()">
+                    <span class="custom-checkmark"></span>
+                  </div>
+                  <div class="tech-desc">
+                    <label for="tech-tarp" class="tech-name">Smart Nano-Tarpaulin</label>
+                    <span class="tech-mat">Anti-static TiO2 PVC Polyester (Electric)</span>
+                    <div class="tech-stats-row">
+                      <span>Eff: <strong>65%</strong></span>
+                      <span>Cost: <strong>₹45,000</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tech 2 -->
+                <div class="tech-item-row" id="row-tech-seal">
+                  <div class="checkbox-container">
+                    <input type="checkbox" id="tech-seal" checked onchange="recalculateSolution()">
+                    <span class="custom-checkmark"></span>
+                  </div>
+                  <div class="tech-desc">
+                    <label for="tech-seal" class="tech-name">Pneumatic Tailgate Seal</label>
+                    <span class="tech-mat">EPDM Inflatable Pressure Seal Gasket</span>
+                    <div class="tech-stats-row">
+                      <span>Eff: <strong>20%</strong></span>
+                      <span>Cost: <strong>₹20,000</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tech 3 -->
+                <div class="tech-item-row" id="row-tech-aero">
+                  <div class="checkbox-container">
+                    <input type="checkbox" id="tech-aero" checked onchange="recalculateSolution()">
+                    <span class="custom-checkmark"></span>
+                  </div>
+                  <div class="tech-desc">
+                    <label for="tech-aero" class="tech-name">Vortex Rear Fairing</label>
+                    <span class="tech-mat">Fiberglass Wake-deflecting Flaps (+3% Fuel)</span>
+                    <div class="tech-stats-row">
+                      <span>Eff: <strong>10%</strong></span>
+                      <span>Cost: <strong>₹15,000</strong></span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tech 4 -->
+                <div class="tech-item-row" id="row-tech-edcms">
+                  <div class="checkbox-container">
+                    <input type="checkbox" id="tech-edcms" checked onchange="recalculateSolution()">
+                    <span class="custom-checkmark"></span>
+                  </div>
+                  <div class="tech-desc">
+                    <label for="tech-edcms" class="tech-name">EDCMS Electro-Mister</label>
+                    <span class="tech-mat">Electrostatic Grid + Polymer Binder Nozzles</span>
+                    <div class="tech-stats-row">
+                      <span>Eff: <strong>40%</strong></span>
+                      <span>Cost: <strong>₹30,000</strong></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Simulation Sliders -->
+              <div class="sliders-section">
+                <h4>System Scope Modifiers</h4>
+                
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span>Fleet Implementation Rate</span>
+                    <span class="val text-teal" id="val-fleet-rate">100%</span>
+                  </div>
+                  <input type="range" id="slider-fleet-rate" min="0" max="100" value="100" class="styled-range" oninput="recalculateSolution()">
+                  <span class="slider-hint">Total: 10,000 heavy tippers/dumpers</span>
+                </div>
+
+                <div class="slider-group">
+                  <div class="slider-label">
+                    <span>Cargo Density / Type</span>
+                    <span class="val text-teal" id="val-cargo-type">Coal</span>
+                  </div>
+                  <select id="select-cargo-type" class="styled-select" onchange="recalculateSolution()">
+                    <option value="coal" selected>Coal (Run of Mine / Fines)</option>
+                    <option value="iron">Iron Ore (Dry Fines)</option>
+                    <option value="clinker">Clinker / Cement Raw</option>
+                    <option value="flyash">Fly Ash (Extremely Volatile)</option>
+                    <option value="sand">Sand / Construction Debris</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- COMPARISON PANEL: Existing vs New Numbers -->
+          <div class="card comparison-card col-span-2">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-scale-balanced"></i> Existing Metrics vs. Post-Implementation Projection</h3>
+              <span class="badge badge-success" id="overall-reduction-badge">98.5% Dust Reduction</span>
+            </div>
+            <div class="card-body">
+              <div class="comparison-grid">
+                <!-- Row 1: Daily Dust Emitted -->
+                <div class="comp-row">
+                  <div class="comp-metric-label">
+                    <h5>Daily Dust Emissions</h5>
+                    <p>Total fugitive cargo particulate released into Raipur-Bhilai airshed</p>
+                  </div>
+                  <div class="comp-values">
+                    <div class="comp-val val-old">
+                      <span class="num">336.0</span>
+                      <span class="unit">Tons/Day</span>
+                      <span class="tag">Existing</span>
+                    </div>
+                    <div class="comp-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                    <div class="comp-val val-new text-success">
+                      <span class="num" id="comp-dust-new">5.0</span>
+                      <span class="unit">Tons/Day</span>
+                      <span class="tag tag-success" id="comp-dust-saved">-98.5% Saved</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 2: Regional Ambient PM10 -->
+                <div class="comp-row">
+                  <div class="comp-metric-label">
+                    <h5>Corridor PM10 Concentration</h5>
+                    <p>Expected roadside particulate density along the highway</p>
+                  </div>
+                  <div class="comp-values">
+                    <div class="comp-val val-old">
+                      <span class="num">235</span>
+                      <span class="unit">µg/m³</span>
+                      <span class="tag">Existing</span>
+                    </div>
+                    <div class="comp-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                    <div class="comp-val val-new text-success">
+                      <span class="num" id="comp-pm10-new">112</span>
+                      <span class="unit">µg/m³</span>
+                      <span class="tag tag-success" id="comp-pm10-saved">Close to Safe Limit</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Row 3: Financial Loss vs Recovery -->
+                <div class="comp-row">
+                  <div class="comp-metric-label">
+                    <h5>Cargo Material Loss (Value)</h5>
+                    <p>Monetary waste due to spillage (e.g. coal/iron ore loss per trip)</p>
+                  </div>
+                  <div class="comp-values">
+                    <div class="comp-val val-old">
+                      <span class="num">₹28.1</span>
+                      <span class="unit">Lakhs/Day</span>
+                      <span class="tag">Existing Loss</span>
+                    </div>
+                    <div class="comp-arrow"><i class="fa-solid fa-circle-arrow-right"></i></div>
+                    <div class="comp-val val-new text-success">
+                      <span class="num" id="comp-loss-new">₹0.4</span>
+                      <span class="unit">Lakhs/Day</span>
+                      <span class="tag tag-success" id="comp-loss-saved">₹10.1 Cr/Yr Saved</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payback / Financial Summary -->
+              <div class="financial-summary-grid">
+                <div class="fin-card">
+                  <div class="label">Total System Capital (Capex)</div>
+                  <div class="val" id="fin-capex">₹110.0 Crores</div>
+                  <div class="desc">For 10,000 commercial vehicles</div>
+                </div>
+                <div class="fin-card">
+                  <div class="label">Annual Cargo Recovery (Opex Savings)</div>
+                  <div class="val text-success" id="fin-opex">₹10.1 Crores</div>
+                  <div class="desc">Includes material recovery</div>
+                </div>
+                <div class="fin-card">
+                  <div class="label">Annual Fuel Savings (Aero Benefit)</div>
+                  <div class="val text-success" id="fin-fuel">₹23.0 Crores</div>
+                  <div class="desc">3% drag reduction at highway speeds</div>
+                </div>
+                <div class="fin-card">
+                  <div class="label">Simple Payback Period</div>
+                  <div class="val text-warning" id="fin-payback">3.3 Years</div>
+                  <div class="desc">Combines fuel & material savings</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SIMULATION: Live Truck Physics & Aerodynamic Simulator -->
+        <div class="dashboard-grid grid-1 margin-top">
+          <div class="card sim-card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-gauge-high"></i> Live Truck Aerodynamics & Dust Particle Simulator</h3>
+              <div class="sim-actions">
+                <div class="sim-speed-control">
+                  <span class="lbl">Truck Speed:</span>
+                  <span class="val" id="sim-speed-val">60 km/h</span>
+                  <input type="range" id="sim-speed" min="20" max="80" value="60" oninput="updateSimSpeed(this.value)">
+                </div>
+                <button class="btn-sim-action" id="btn-toggle-sim" onclick="toggleSimulation()">
+                  <i class="fa-solid fa-pause"></i> Pause
+                </button>
+              </div>
+            </div>
+            <div class="card-body sim-container">
+              <!-- Interactive Canvas/SVG simulation -->
+              <div class="simulation-canvas-wrapper">
+                <canvas id="simCanvas"></canvas>
+                <!-- SVG overlays showing air currents -->
+                <svg id="aero-overlay-svg" viewBox="0 0 1000 300">
+                  <defs>
+                    <linearGradient id="glow-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#00f2fe" stop-opacity="0.8" />
+                      <stop offset="100%" stop-color="#4facfe" stop-opacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <!-- Aerodynamic streamlines -->
+                  <path id="streamline-1" class="streamline" d="M 50,70 L 400,70 Q 450,70 470,90 L 520,135 Q 540,150 560,190 Q 580,240 700,240" fill="none" stroke="rgba(0, 242, 254, 0.4)" stroke-width="2.5" />
+                  <path id="streamline-2" class="streamline" d="M 50,40 L 400,40 Q 470,40 500,60 L 600,165 Q 630,200 750,210 L 950,210" fill="none" stroke="rgba(0, 242, 254, 0.4)" stroke-width="2.5" />
+                  <path id="streamline-3" class="streamline" d="M 50,15 L 430,15 Q 520,15 570,50 L 700,170 L 950,170" fill="none" stroke="rgba(0, 242, 254, 0.3)" stroke-width="2.5" stroke-dasharray="10 8" />
+                  
+                  <!-- Undercarriage stream -->
+                  <path id="streamline-under" class="streamline" d="M 50,255 L 750,255" fill="none" stroke="rgba(0, 242, 254, 0.5)" stroke-width="2" />
+                  
+                  <!-- Interactive hotspots on truck SVG outline -->
+                  <!-- Cover hotspot -->
+                  <circle cx="505" cy="115" r="14" class="sim-hotspot-marker" id="mark-tarp" onclick="toggleCheckbox('tech-tarp')" />
+                  <!-- Tailgate hotspot -->
+                  <circle cx="612" cy="180" r="12" class="sim-hotspot-marker" id="mark-seal" onclick="toggleCheckbox('tech-seal')" />
+                  <!-- Aero Fairing hotspot -->
+                  <circle cx="628" cy="215" r="12" class="sim-hotspot-marker" id="mark-aero" onclick="toggleCheckbox('tech-aero')" />
+                  
+                  <!-- Tooltips for hotspots -->
+                  <g class="sim-tooltip" id="tooltip-tarp" transform="translate(420, 60)" style="opacity:0; pointer-events: none;">
+                    <rect width="170" height="40" rx="4" fill="rgba(10,25,47,0.95)" stroke="#00f2fe" stroke-width="1"/>
+                    <text x="10" y="24" fill="#fff" font-size="11" font-weight="bold" font-family="Inter">Nano-Tarpaulin Cover</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="simulation-legend">
+                <div class="legend-item"><span class="legend-dot green"></span><span>Airflow Streamlines (Laminar)</span></div>
+                <div class="legend-item"><span class="legend-dot red-pulse"></span><span>Uncontrolled Dust Plume (Cargo outflow)</span></div>
+                <div class="legend-item"><span class="legend-dot blue"></span><span>Electrostatic Collection Grid</span></div>
+                <div class="legend-item"><span class="legend-dot cyan"></span><span>Interactive Sensor Node (Click to Toggle)</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid grid-2 margin-top">
+          <!-- Cumulative Cash Flow Chart -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-chart-area"></i> Cumulative Payback Curve (Investment vs. Savings)</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="paybackChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Regional AQI Projections -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fa-solid fa-house-medical"></i> 12-Month AQI Projection (With and Without Retrofit)</h3>
+            </div>
+            <div class="card-body">
+              <div class="chart-container">
+                <canvas id="aqiProjectedChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
